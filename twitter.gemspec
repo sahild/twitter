@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday', '~> 0.7.6'
   spec.add_dependency 'http', '~> 0.5.0'
   spec.add_dependency 'http_parser.rb', '~> 0.5.0'
-  spec.add_dependency 'json', '~> 1.8'
+  spec.add_dependency 'json', '~> 1.7'
   spec.add_dependency 'simple_oauth', '~> 0.2.0'
   spec.add_dependency 'thread_safe', '~> 0.1.3'
   spec.add_development_dependency 'bundler', '~> 1.0'
