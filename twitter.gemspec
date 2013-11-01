@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'buftok', '~> 0.1.0'
   spec.add_dependency 'descendants_tracker', '~> 0.0.1'
   spec.add_dependency 'equalizer', '~> 0.0.7'
-  spec.add_dependency 'faraday', ['>= 0.8', '< 0.10']
+  spec.add_dependency 'faraday', '~> 0.7.6'
   spec.add_dependency 'http', '~> 0.5.0'
   spec.add_dependency 'http_parser.rb', '~> 0.5.0'
   spec.add_dependency 'json', '~> 1.8'
