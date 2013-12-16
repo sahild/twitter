@@ -4,30 +4,31 @@ module Twitter
   class Tweet < Twitter::Identity
     include Twitter::Creatable
     attr_reader :favorite_count, :favorited, :in_reply_to_screen_name,
-      :in_reply_to_attrs_id, :in_reply_to_status_id, :in_reply_to_user_id,
-      :lang, :retweet_count, :retweeted, :source, :text, :truncated
-    alias favorites_count favorite_count
-    alias favoriters_count favorite_count
-    alias in_reply_to_tweet_id in_reply_to_status_id
-    alias retweeters_count retweet_count
+                :in_reply_to_attrs_id, :in_reply_to_status_id,
+                :in_reply_to_user_id, :lang, :retweet_count, :retweeted,
+                :source, :text, :truncated
+    alias_method :favorites_count, :favorite_count
+    alias_method :favoriters_count, :favorite_count
+    alias_method :in_reply_to_tweet_id, :in_reply_to_status_id
+    alias_method :retweeters_count, :retweet_count
     object_attr_reader :GeoFactory, :geo
     object_attr_reader :Metadata, :metadata
     object_attr_reader :Place, :place
     object_attr_reader :Tweet, :retweeted_status
-    alias retweet retweeted_status
-    alias retweeted_tweet retweeted_status
-    alias retweet? retweeted_status?
-    alias retweeted_tweet? retweeted_status?
+    alias_method :retweet, :retweeted_status
+    alias_method :retweeted_tweet, :retweeted_status
+    alias_method :retweet?, :retweeted_status?
+    alias_method :retweeted_tweet?, :retweeted_status?
     object_attr_reader :User, :user, :status
 
     # @return [Boolean]
     def entities?
-      !@attrs[:entities].nil? && @attrs[:entities].any?{|_, array| !array.empty?}
+      !@attrs[:entities].nil? && @attrs[:entities].any? { |_, array| !array.empty? }
     end
     memoize :entities?
 
     def filter_level
-      @attrs[:filter_level] || "none"
+      @attrs[:filter_level] || 'none'
     end
     memoize :filter_level
 
@@ -72,10 +73,10 @@ module Twitter
 
     # @return [String] The URL to the tweet.
     def uri
-      URI.parse("https://twitter.com/#{user.screen_name}/status/#{id}")
+      Addressable::URI.parse("https://twitter.com/#{user.screen_name}/status/#{id}")
     end
     memoize :uri
-    alias url uri
+    alias_method :url, :uri
 
     # @note Must include entities in your request for this method to work
     # @return [Array<Twitter::Entity::URI>]
@@ -83,7 +84,7 @@ module Twitter
       entities(Entity::URI, :urls)
     end
     memoize :uris
-    alias urls uris
+    alias_method :urls, :uris
 
     # @note Must include entities in your request for this method to work
     # @return [Array<Twitter::Entity::UserMention>]
@@ -106,8 +107,6 @@ module Twitter
         []
       end
     end
-
   end
-
-  Status = Tweet
+  Status = Tweet # rubocop:disable ConstantName
 end

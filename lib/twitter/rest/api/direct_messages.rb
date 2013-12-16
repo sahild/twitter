@@ -22,8 +22,8 @@ module Twitter
         # @option options [Integer] :max_id Returns results with an ID less than (that is, older than) or equal to the specified ID.
         # @option options [Integer] :count Specifies the number of records to retrieve. Must be less than or equal to 200.
         # @option options [Integer] :page Specifies the page of results to retrieve.
-        def direct_messages_received(options={})
-          objects_from_response(Twitter::DirectMessage, :get, "/1.1/direct_messages.json", options)
+        def direct_messages_received(options = {})
+          objects_from_response(Twitter::DirectMessage, :get, '/1.1/direct_messages.json', options)
         end
 
         # Returns the 20 most recent direct messages sent by the authenticating user
@@ -39,8 +39,8 @@ module Twitter
         # @option options [Integer] :max_id Returns results with an ID less than (that is, older than) or equal to the specified ID.
         # @option options [Integer] :count Specifies the number of records to retrieve. Must be less than or equal to 200.
         # @option options [Integer] :page Specifies the page of results to retrieve.
-        def direct_messages_sent(options={})
-          objects_from_response(Twitter::DirectMessage, :get, "/1.1/direct_messages/sent.json", options)
+        def direct_messages_sent(options = {})
+          objects_from_response(Twitter::DirectMessage, :get, '/1.1/direct_messages/sent.json', options)
         end
 
         # Returns a direct message
@@ -53,9 +53,9 @@ module Twitter
         # @return [Twitter::DirectMessage] The requested messages.
         # @param id [Integer] A direct message ID.
         # @param options [Hash] A customizable set of options.
-        def direct_message(id, options={})
+        def direct_message(id, options = {})
           options[:id] = id
-          object_from_response(Twitter::DirectMessage, :get, "/1.1/direct_messages/show.json", options)
+          object_from_response(Twitter::DirectMessage, :get, '/1.1/direct_messages/show.json', options)
         end
 
         # @note This method requires an access token with RWD (read, write & direct message) permissions. Consult The Application Permission Model for more information.
@@ -63,7 +63,7 @@ module Twitter
         # @authentication Requires user context
         # @raise [Twitter::Error::Unauthorized] Error raised when supplied user credentials are not valid.
         # @return [Array<Twitter::DirectMessage>] The requested messages.
-        # @overload direct_messages(options={})
+        # @overload direct_messages(options = {})
         #   Returns the 20 most recent direct messages sent to the authenticating user
         #
         #   @see https://dev.twitter.com/docs/api/1.1/get/direct_messages
@@ -108,7 +108,7 @@ module Twitter
         #   @param ids [Enumerable<Integer>] A collection of direct message IDs.
         #   @param options [Hash] A customizable set of options.
         def destroy_direct_message(*args)
-          threaded_objects_from_response(Twitter::DirectMessage, :post, "/1.1/direct_messages/destroy.json", args)
+          threaded_objects_from_response(Twitter::DirectMessage, :post, '/1.1/direct_messages/destroy.json', args)
         end
         deprecate_alias :direct_message_destroy, :destroy_direct_message
 
@@ -122,16 +122,15 @@ module Twitter
         # @param user [Integer, String, Twitter::User] A Twitter user ID, screen name, URI, or object.
         # @param text [String] The text of your direct message, up to 140 characters.
         # @param options [Hash] A customizable set of options.
-        def create_direct_message(user, text, options={})
+        def create_direct_message(user, text, options = {})
           merge_user!(options, user)
           options[:text] = text
-          object_from_response(Twitter::DirectMessage, :post, "/1.1/direct_messages/new.json", options)
+          object_from_response(Twitter::DirectMessage, :post, '/1.1/direct_messages/new.json', options)
         end
-        alias d create_direct_message
-        alias m create_direct_message
-        alias dm create_direct_message
+        alias_method :d, :create_direct_message
+        alias_method :m, :create_direct_message
+        alias_method :dm, :create_direct_message
         deprecate_alias :direct_message_create, :create_direct_message
-
       end
     end
   end

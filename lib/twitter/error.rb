@@ -18,25 +18,28 @@ module Twitter
       OVER_CAPACITY                = 130
       INTERNAL_ERROR               = 131
       OAUTH_TIMESTAMP_OUT_OF_RANGE = 135
+      FOLLOW_LIMIT_EXCEEDED        = 161
+      PROTECTED_STATUS             = 179
+      OVER_UPDATE_LIMIT            = 185
       DUPLICATE_STATUS             = 187
       BAD_AUTHENTICATION_DATA      = 215
       LOGIN_VERIFICATION_NEEDED    = 231
+      ENDPOINT_RETIRED             = 251
     end
 
     class << self
-
       # Create a new error from an HTTP response
       #
       # @param response [Hash]
       # @return [Twitter::Error]
-      def from_response(response={})
+      def from_response(response = {})
         error, code = parse_error(response[:body])
         new(error, response[:response_headers], code)
       end
 
       # @return [Hash]
       def errors
-        @errors ||= descendants.inject({}) do |hash, klass|
+        @errors ||= descendants.reduce({}) do |hash, klass|
           hash[klass::HTTP_STATUS_CODE] = klass
           hash
         end
@@ -62,7 +65,6 @@ module Twitter
           [first.chomp, nil]
         end
       end
-
     end
 
     # Initializes a new Error object
@@ -71,12 +73,11 @@ module Twitter
     # @param response_headers [Hash]
     # @param code [Integer]
     # @return [Twitter::Error]
-    def initialize(exception=$!, response_headers={}, code=nil)
+    def initialize(exception = $ERROR_INFO, response_headers = {}, code = nil) # rubocop:disable MethodLength
       @rate_limit = RateLimit.new(response_headers)
       @wrapped_exception = exception
       @code = code
       exception.respond_to?(:message) ? super(exception.message) : super(exception.to_s)
     end
-
   end
 end

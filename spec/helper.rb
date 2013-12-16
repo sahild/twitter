@@ -5,7 +5,11 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
   SimpleCov::Formatter::HTMLFormatter,
   Coveralls::SimpleCov::Formatter
 ]
-SimpleCov.start
+
+SimpleCov.start do
+  add_filter '/spec/'
+  minimum_coverage(99.07)
+end
 
 require 'twitter'
 require 'rspec'
@@ -55,7 +59,7 @@ def stub_put(path)
 end
 
 def fixture_path
-  File.expand_path("../fixtures", __FILE__)
+  File.expand_path('../fixtures', __FILE__)
 end
 
 def fixture(file)

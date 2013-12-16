@@ -23,7 +23,7 @@ module Twitter
         # @param options [Hash] A customizable set of options.
         # @option options [Integer] :count Specifies the number of records to retrieve. Must be less than or equal to 100.
         # @option options [Boolean, String, Integer] :trim_user Each tweet returned in a timeline will include a user object with only the author's numerical ID when set to true, 't' or 1.
-        def retweets(tweet, options={})
+        def retweets(tweet, options = {})
           id = extract_id(tweet)
           objects_from_response(Twitter::Tweet, :get, "/1.1/statuses/retweets/#{id}.json", options)
         end
@@ -40,7 +40,7 @@ module Twitter
         # @option options [Integer] :count Specifies the number of records to retrieve. Must be less than or equal to 100.
         # @option options [Boolean, String, Integer] :trim_user Each tweet returned in a timeline will include a user object with only the author's numerical ID when set to true, 't' or 1.
         # @option options [Boolean] :ids_only ('false') Only return user ids instead of full user objects.
-        def retweeters_of(tweet, options={})
+        def retweeters_of(tweet, options = {})
           ids_only = !!options.delete(:ids_only)
           retweeters = retweets(tweet, options).map(&:user)
           ids_only ? retweeters.map(&:id) : retweeters
@@ -57,7 +57,7 @@ module Twitter
         # @param tweet [Integer, String, URI, Twitter::Tweet] A Tweet ID, URI, or object.
         # @param options [Hash] A customizable set of options.
         # @option options [Boolean, String, Integer] :trim_user Each tweet returned in a timeline will include a user object with only the author's numerical ID when set to true, 't' or 1.
-        def status(tweet, options={})
+        def status(tweet, options = {})
           id = extract_id(tweet)
           object_from_response(Twitter::Tweet, :get, "/1.1/statuses/show/#{id}.json", options)
         end
@@ -76,7 +76,7 @@ module Twitter
         #   @param options [Hash] A customizable set of options.
         #   @option options [Boolean, String, Integer] :trim_user Each tweet returned in a timeline will include a user object with only the author's numerical ID when set to true, 't' or 1.
         def statuses(*args)
-          threaded_tweets_from_response(:get, "/1.1/statuses/show", args)
+          threaded_tweets_from_response(:get, '/1.1/statuses/show', args)
         end
 
         # Destroys the specified Tweets
@@ -94,9 +94,9 @@ module Twitter
         #   @param options [Hash] A customizable set of options.
         #   @option options [Boolean, String, Integer] :trim_user Each tweet returned in a timeline will include a user object with only the author's numerical ID when set to true, 't' or 1.
         def destroy_status(*args)
-          threaded_tweets_from_response(:post, "/1.1/statuses/destroy", args)
+          threaded_tweets_from_response(:post, '/1.1/statuses/destroy', args)
         end
-        alias destroy_tweet destroy_status
+        alias_method :destroy_tweet, :destroy_status
         deprecate_alias :status_destroy, :destroy_status
         deprecate_alias :tweet_destroy, :destroy_status
 
@@ -110,14 +110,19 @@ module Twitter
         # @return [Twitter::Tweet] The created Tweet.
         # @param status [String] The text of your status update, up to 140 characters.
         # @param options [Hash] A customizable set of options.
+        # @option options [Twitter::Tweet] :in_reply_to_status An existing status that the update is in reply to.
         # @option options [Integer] :in_reply_to_status_id The ID of an existing status that the update is in reply to.
         # @option options [Float] :lat The latitude of the location this tweet refers to. This option will be ignored unless it is inside the range -90.0 to +90.0 (North is positive) inclusive. It will also be ignored if there isn't a corresponding :long option.
         # @option options [Float] :long The longitude of the location this tweet refers to. The valid ranges for longitude is -180.0 to +180.0 (East is positive) inclusive. This option will be ignored if outside that range, if it is not a number, if geo_enabled is disabled, or if there not a corresponding :lat option.
+        # @option options [Twitter::Place] :place A place in the world. These can be retrieved from {Twitter::REST::API::PlacesAndGeo#reverse_geocode}.
         # @option options [String] :place_id A place in the world. These IDs can be retrieved from {Twitter::REST::API::PlacesAndGeo#reverse_geocode}.
         # @option options [String] :display_coordinates Whether or not to put a pin on the exact coordinates a tweet has been sent from.
         # @option options [Boolean, String, Integer] :trim_user Each tweet returned in a timeline will include a user object with only the author's numerical ID when set to true, 't' or 1.
-        def update(status, options={})
-          object_from_response(Twitter::Tweet, :post, "/1.1/statuses/update.json", options.merge(:status => status))
+        def update(status, options = {})
+          hash = options.dup
+          hash[:in_reply_to_status_id] = hash.delete(:in_reply_to_status).id unless hash[:in_reply_to_status].nil?
+          hash[:place_id] = hash.delete(:place).woeid unless hash[:place].nil?
+          object_from_response(Twitter::Tweet, :post, '/1.1/statuses/update.json', hash.merge(:status => status))
         rescue Twitter::Error::Forbidden => error
           handle_forbidden_error(Twitter::Error::AlreadyPosted, error)
         end
@@ -184,14 +189,20 @@ module Twitter
         # @param status [String] The text of your status update, up to 140 characters.
         # @param media [File, Hash] A File object with your picture (PNG, JPEG or GIF)
         # @param options [Hash] A customizable set of options.
+        # @option options [Boolean, String, Integer] :possibly_sensitive Set to true for content which may not be suitable for every audience.
+        # @option options [Twitter::Tweet] :in_reply_to_status An existing status that the update is in reply to.
         # @option options [Integer] :in_reply_to_status_id The ID of an existing Tweet that the update is in reply to.
         # @option options [Float] :lat The latitude of the location this tweet refers to. This option will be ignored unless it is inside the range -90.0 to +90.0 (North is positive) inclusive. It will also be ignored if there isn't a corresponding :long option.
         # @option options [Float] :long The longitude of the location this tweet refers to. The valid ranges for longitude is -180.0 to +180.0 (East is positive) inclusive. This option will be ignored if outside that range, if it is not a number, if geo_enabled is disabled, or if there not a corresponding :lat option.
+        # @option options [Twitter::Place] :place A place in the world. These can be retrieved from {Twitter::REST::API::PlacesAndGeo#reverse_geocode}.
         # @option options [String] :place_id A place in the world. These IDs can be retrieved from {Twitter::REST::API::PlacesAndGeo#reverse_geocode}.
         # @option options [String] :display_coordinates Whether or not to put a pin on the exact coordinates a tweet has been sent from.
         # @option options [Boolean, String, Integer] :trim_user Each tweet returned in a timeline will include a user object with only the author's numerical ID when set to true, 't' or 1.
-        def update_with_media(status, media, options={})
-          object_from_response(Twitter::Tweet, :post, "/1.1/statuses/update_with_media.json", options.merge('media[]' => media, 'status' => status))
+        def update_with_media(status, media, options = {})
+          hash = options.dup
+          hash[:in_reply_to_status_id] = hash.delete(:in_reply_to_status).id unless hash[:in_reply_to_status].nil?
+          hash[:place_id] = hash.delete(:place).woeid unless hash[:place].nil?
+          object_from_response(Twitter::Tweet, :post, '/1.1/statuses/update_with_media.json', hash.merge('media[]' => media, 'status' => status))
         rescue Twitter::Error::Forbidden => error
           handle_forbidden_error(Twitter::Error::AlreadyPosted, error)
         end
@@ -212,9 +223,9 @@ module Twitter
         # @option options [String] :align Specifies whether the embedded Tweet should be left aligned, right aligned, or centered in the page. Valid values are left, right, center, and none. Defaults to none, meaning no alignment styles are specified for the Tweet.
         # @option options [String] :related A value for the TWT related parameter, as described in {https://dev.twitter.com/docs/intents Web Intents}. This value will be forwarded to all Web Intents calls.
         # @option options [String] :lang Language code for the rendered embed. This will affect the text and localization of the rendered HTML.
-        def oembed(tweet, options={})
+        def oembed(tweet, options = {})
           options[:id] = extract_id(tweet)
-          object_from_response(Twitter::OEmbed, :get, "/1.1/statuses/oembed.json", options)
+          object_from_response(Twitter::OEmbed, :get, '/1.1/statuses/oembed.json', options)
         end
 
         # Returns oEmbeds for Tweets
@@ -250,16 +261,16 @@ module Twitter
         # @rate_limited Yes
         # @authentication Required
         # @raise [Twitter::Error::Unauthorized] Error raised when supplied user credentials are not valid.
-        # @return [Array<Integer>]
+        # @return [Twitter::Cursor]
         # @overload retweeters_ids(options)
         #   @param options [Hash] A customizable set of options.
-        # @overload retweeters_ids(id, options={})
+        # @overload retweeters_ids(id, options = {})
         #   @param tweet [Integer, String, URI, Twitter::Tweet] A Tweet ID, URI, or object.
         #   @param options [Hash] A customizable set of options.
         def retweeters_ids(*args)
           arguments = Twitter::Arguments.new(args)
           arguments.options[:id] ||= extract_id(arguments.first)
-          cursor_from_response(:ids, nil, :get, "/1.1/statuses/retweeters/ids.json", arguments.options)
+          cursor_from_response(:ids, nil, :get, '/1.1/statuses/retweeters/ids.json', arguments.options)
         end
 
       private
@@ -284,7 +295,6 @@ module Twitter
           retweeted_status[:body][:retweeted_status] = response[:body]
           Twitter::Tweet.from_response(retweeted_status)
         end
-
       end
     end
   end

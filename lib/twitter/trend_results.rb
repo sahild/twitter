@@ -1,35 +1,33 @@
 require 'twitter/creatable'
 require 'twitter/enumerable'
-require 'twitter/memoizable'
+require 'memoizable'
 require 'twitter/null_object'
 
 module Twitter
   class TrendResults
     include Twitter::Creatable
     include Twitter::Enumerable
-    include Twitter::Memoizable
+    include Memoizable
     attr_reader :attrs
-    alias to_h attrs
-    alias to_hash attrs
-    alias to_hsh attrs
+    alias_method :to_h, :attrs
+    alias_method :to_hash, :attrs
+    alias_method :to_hsh, :attrs
 
     class << self
-
       # Construct a new TrendResults object from a response hash
       #
       # @param response [Hash]
       # @return [Twitter::Base]
-      def from_response(response={})
+      def from_response(response = {})
         new(response[:body].first)
       end
-
     end
 
     # Initializes a new TrendResults object
     #
     # @param attrs [Hash]
     # @return [Twitter::TrendResults]
-    def initialize(attrs={})
+    def initialize(attrs = {})
       @attrs = attrs
       @collection = Array(@attrs[:trends]).map do |trend|
         Trend.new(trend)
@@ -60,6 +58,5 @@ module Twitter
       !@attrs[:locations].nil? && !@attrs[:locations].first.nil?
     end
     memoize :location?
-
   end
 end

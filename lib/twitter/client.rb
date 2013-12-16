@@ -1,21 +1,20 @@
+require 'addressable/uri'
 require 'simple_oauth'
 require 'twitter/version'
-require 'uri'
 
 module Twitter
   class Client
-    attr_accessor :access_token, :access_token_secret, :consumer_key,
-      :consumer_secret, :user_agent
-    alias oauth_token access_token
-    alias oauth_token= access_token=
-    alias oauth_token_secret access_token_secret
-    alias oauth_token_secret= access_token_secret=
+    attr_accessor :access_token, :access_token_secret, :consumer_key, :consumer_secret
+    alias_method :oauth_token, :access_token
+    alias_method :oauth_token=, :access_token=
+    alias_method :oauth_token_secret, :access_token_secret
+    alias_method :oauth_token_secret=, :access_token_secret=
 
     # Initializes a new Client object
     #
     # @param options [Hash]
     # @return [Twitter::Client]
-    def initialize(options={})
+    def initialize(options = {})
       options.each do |key, value|
         send(:"#{key}=", value)
       end
@@ -58,14 +57,13 @@ module Twitter
     def validate_credential_type!
       credentials.each do |credential, value|
         next if value.nil?
-        raise(Error::ConfigurationError, "Invalid #{credential} specified: #{value.inspect} must be a string or symbol.") unless value.is_a?(String) || value.is_a?(Symbol)
+        fail(Error::ConfigurationError, "Invalid #{credential} specified: #{value.inspect} must be a string or symbol.") unless value.is_a?(String) || value.is_a?(Symbol)
       end
     end
 
-    def oauth_auth_header(method, uri, params={})
-      uri = URI.parse(uri)
+    def oauth_auth_header(method, uri, params = {})
+      uri = Addressable::URI.parse(uri)
       SimpleOAuth::Header.new(method, uri, params, credentials)
     end
-
   end
 end

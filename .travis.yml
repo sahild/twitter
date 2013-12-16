@@ -1,18 +1,23 @@
 bundler_args: --without development
 language: ruby
 rvm:
-  - jruby-18mode
-  - jruby-19mode
-  - rbx-18mode
-  - rbx-19mode
   - 1.8.7
   - 1.9.2
   - 1.9.3
   - 2.0.0
-  - 2.1.0
+  - rbx
+  - ruby-head
 matrix:
+  include:
+    - rvm: jruby-19mode
+      env: JRUBY_OPTS="$JRUBY_OPTS --debug"
+    - rvm: jruby-20mode
+      env: JRUBY_OPTS="$JRUBY_OPTS --debug"
+    - rvm: jruby-head
+      env: JRUBY_OPTS="$JRUBY_OPTS --debug"
   allow_failures:
-    - rvm: jruby-18mode
-    - rvm: rbx-18mode
-    - rvm: 1.8.7
-    - rvm: 2.1.0
+    - rvm: jruby-head
+    - rvm: rbx
+    - rvm: ruby-head
+  fast_finish: true
+script: bundle exec rake default

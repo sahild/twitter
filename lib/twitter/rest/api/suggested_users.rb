@@ -13,12 +13,12 @@ module Twitter
         # @rate_limited Yes
         # @authentication Requires user context
         # @raise [Twitter::Error::Unauthorized] Error raised when supplied user credentials are not valid.
-        # @overload suggestions(options={})
+        # @overload suggestions(options = {})
         #   Returns the list of suggested user categories
         #
         #   @see https://dev.twitter.com/docs/api/1.1/get/users/suggestions
         #   @param options [Hash] A customizable set of options.
-        # @overload suggestions(slug, options={})
+        # @overload suggestions(slug, options = {})
         #   Returns the users in a given category
         #
         #   @see https://dev.twitter.com/docs/api/1.1/get/users/suggestions/:slug
@@ -29,7 +29,7 @@ module Twitter
           if arguments.last
             object_from_response(Twitter::Suggestion, :get, "/1.1/users/suggestions/#{arguments.pop}.json", arguments.options)
           else
-            objects_from_response(Twitter::Suggestion, :get, "/1.1/users/suggestions.json", arguments.options)
+            objects_from_response(Twitter::Suggestion, :get, '/1.1/users/suggestions.json', arguments.options)
           end
         end
 
@@ -41,10 +41,9 @@ module Twitter
         # @param slug [String] The short name of list or a category.
         # @param options [Hash] A customizable set of options.
         # @return [Array<Twitter::User>]
-        def suggest_users(slug, options={})
+        def suggest_users(slug, options = {})
           objects_from_response(Twitter::User, :get, "/1.1/users/suggestions/#{slug}/members.json", options)
         end
-
       end
     end
   end

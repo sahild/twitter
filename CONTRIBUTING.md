@@ -14,10 +14,10 @@ improve this project. Here are some ways *you* can contribute:
 * Refactor code.
 * Fix [issues][].
 * Review patches.
-* Financially pledge using [Pledgie][].
+* Financially pledge using [gittip][].
 
 [issues]: https://github.com/sferik/twitter/issues
-[Pledgie]: http://pledgie.com/campaigns/18388
+[gittip]: https://www.gittip.com/sferik/
 
 ## Submitting an Issue
 We use the [GitHub issue tracker][issues] to track bugs and features. Before
@@ -35,13 +35,13 @@ Ideally, a bug report should include a pull request with failing specs.
 3. Add specs for your unimplemented feature or bug fix.
 4. Run `bundle exec rake spec`. If your specs pass, return to step 3.
 5. Implement your feature or bug fix.
-6. Run `bundle exec rake spec`. If your specs fail, return to step 5.
+6. Run `bundle exec rake default`. If your specs fail, return to step 5.
 7. Run `open coverage/index.html`. If your changes are not completely covered
    by your tests, return to step 3.
-8.  Run `RUBYOPT=W2 bundle exec rake spec 2>&1 | grep twitter`. If your changes
+8. Run `RUBYOPT=W2 bundle exec rake spec 2>&1 | grep twitter`. If your changes
    produce any warnings, return to step 5.
 9. Add documentation for your feature or bug fix.
-10. Run `bundle exec rake yard`. If your changes are not 100% documented, go
+10. Run `bundle exec rake verify_measurements`. If your changes are not 100% documented, go
     back to step 9.
 11. Commit and push your changes.
 12. [Submit a pull request.][pr]

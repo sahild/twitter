@@ -1,24 +1,23 @@
+require 'addressable/uri'
 require 'forwardable'
-require 'twitter/memoizable'
+require 'memoizable'
 require 'twitter/null_object'
-require 'uri'
 
 module Twitter
   class Base
     extend Forwardable
-    include Twitter::Memoizable
+    include Memoizable
     attr_reader :attrs
-    alias to_h attrs
-    alias to_hash attrs
-    alias to_hsh attrs
+    alias_method :to_h, :attrs
+    alias_method :to_hash, :attrs
+    alias_method :to_hsh, :attrs
 
     class << self
-
       # Construct an object from a response hash
       #
       # @param response [Hash]
       # @return [Twitter::Base]
-      def from_response(response={})
+      def from_response(response = {})
         new(response[:body])
       end
 
@@ -37,7 +36,7 @@ module Twitter
       # @param klass [Symbol]
       # @param key1 [Symbol]
       # @param key2 [Symbol]
-      def object_attr_reader(klass, key1, key2=nil)
+      def object_attr_reader(klass, key1, key2 = nil)
         define_attribute_method(key1, klass, key2)
         define_predicate_method(key1)
       end
@@ -47,10 +46,10 @@ module Twitter
       # @param attrs [Array, Symbol]
       def uri_attr_reader(*attrs)
         attrs.each do |uri_key|
-          array = uri_key.to_s.split("_")
-          index = array.index("uri")
-          array[index] = "url"
-          url_key = array.join("_").to_sym
+          array = uri_key.to_s.split('_')
+          index = array.index('uri')
+          array[index] = 'url'
+          url_key = array.join('_').to_sym
           define_uri_method(uri_key, url_key)
           alias_method(url_key, uri_key)
           define_predicate_method(uri_key, url_key)
@@ -73,8 +72,8 @@ module Twitter
       # @param key1 [Symbol]
       # @param key2 [Symbol]
       def define_uri_method(key1, key2)
-        define_method(key1) do
-          URI.parse(@attrs[key2]) if @attrs[key2]
+        define_method(key1) do ||
+          Addressable::URI.parse(@attrs[key2]) if @attrs[key2]
         end
         memoize(key1)
       end
@@ -84,8 +83,8 @@ module Twitter
       # @param key1 [Symbol]
       # @param klass [Symbol]
       # @param key2 [Symbol]
-      def define_attribute_method(key1, klass=nil, key2=nil)
-        define_method(key1) do
+      def define_attribute_method(key1, klass = nil, key2 = nil)
+        define_method(key1) do ||
           if klass.nil?
             @attrs[key1]
           else
@@ -104,20 +103,19 @@ module Twitter
       #
       # @param key1 [Symbol]
       # @param key2 [Symbol]
-      def define_predicate_method(key1, key2=key1)
-        define_method(:"#{key1}?") do
+      def define_predicate_method(key1, key2 = key1)
+        define_method(:"#{key1}?") do ||
           !!@attrs[key2]
         end
         memoize(:"#{key1}?")
       end
-
     end
 
     # Initializes a new object
     #
     # @param attrs [Hash]
     # @return [Twitter::Base]
-    def initialize(attrs={})
+    def initialize(attrs = {})
       @attrs = attrs || {}
     end
 
@@ -132,7 +130,7 @@ module Twitter
 
   private
 
-    def attrs_for_object(key1, key2=nil)
+    def attrs_for_object(key1, key2 = nil)
       if key2.nil?
         @attrs[key1]
       else
@@ -140,6 +138,5 @@ module Twitter
         attrs.delete(key1).merge(key2 => attrs)
       end
     end
-
   end
 end

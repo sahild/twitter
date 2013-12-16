@@ -12,7 +12,7 @@ module Twitter
         # @authentication Requires user context
         # @raise [Twitter::Error::Unauthorized] Error raised when supplied user credentials are not valid.
         # @return [Array<Twitter::SavedSearch>] The saved searches.
-        # @overload saved_search(options={})
+        # @overload saved_search(options = {})
         #   Returns the authenticated user's saved search queries
         #
         #   @see https://dev.twitter.com/docs/api/1.1/get/saved_searches/list
@@ -31,7 +31,7 @@ module Twitter
         def saved_searches(*args)
           arguments = Twitter::Arguments.new(args)
           if arguments.empty?
-            objects_from_response(Twitter::SavedSearch, :get, "/1.1/saved_searches/list.json", arguments.options)
+            objects_from_response(Twitter::SavedSearch, :get, '/1.1/saved_searches/list.json', arguments.options)
           else
             arguments.flatten.threaded_map do |id|
               saved_search(id, arguments.options)
@@ -48,7 +48,7 @@ module Twitter
         # @return [Twitter::SavedSearch] The saved searches.
         # @param id [Integer] The ID of the saved search.
         # @param options [Hash] A customizable set of options.
-        def saved_search(id, options={})
+        def saved_search(id, options = {})
           object_from_response(Twitter::SavedSearch, :get, "/1.1/saved_searches/show/#{id}.json", options)
         end
 
@@ -61,8 +61,8 @@ module Twitter
         # @return [Twitter::SavedSearch] The created saved search.
         # @param query [String] The query of the search the user would like to save.
         # @param options [Hash] A customizable set of options.
-        def create_saved_search(query, options={})
-          object_from_response(Twitter::SavedSearch, :post, "/1.1/saved_searches/create.json", options.merge(:query => query))
+        def create_saved_search(query, options = {})
+          object_from_response(Twitter::SavedSearch, :post, '/1.1/saved_searches/create.json', options.merge(:query => query))
         end
         deprecate_alias :saved_search_create, :create_saved_search
 
@@ -86,7 +86,6 @@ module Twitter
           end
         end
         deprecate_alias :saved_search_destroy, :destroy_saved_search
-
       end
     end
   end

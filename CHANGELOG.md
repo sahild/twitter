@@ -1,3 +1,28 @@
+5.2.0
+-----
+* [Replace `URI` with `adressable`](https://github.com/sferik/twitter/commit/7ea2f5390dc7456950f55c90aa4e48f29dcd4604)
+* [Make `Twitter::Streaming::FriendList` an array](https://github.com/sferik/twitter/commit/1a38e5e8182823c3060fc59c270ef754bd49a179)
+* [Add `Twitter::Streaming::DeletedTweet`](https://github.com/sferik/twitter/commit/084025b5e348bd33b4c29c6b9e40565c0e77319c)
+* [Add `Twitter::Streaming::StallWarning`](https://github.com/sferik/twitter/commit/b07ac50552f5063ee43a490fa40da8b6889df772)
+* [Add error code for "User is over daily status update limit"](https://github.com/sferik/twitter/commit/76c088d38e594703ee391f2a524142aa357b0972)
+* [`Twitter::Streaming::Client#site` can take a `String` or `Twitter::User`](https://github.com/sferik/twitter/commit/e3ad4f2da1f8fc82e1d3febbc2602f626bced8a8)
+* [Update `http_parser.rb` dependency to `~> 0.6.0`](https://github.com/sferik/twitter/commit/6d2f81bfc5bd469d558868a0f65356f30ca9f5e7)
+
+5.1.1
+-----
+* [Custom equalizer for `Twitter::Place`](https://github.com/sferik/twitter/commit/79c76a9bed4f0170c8c09fe38ad4f0ee6aa4505e)
+
+5.1.0
+-----
+* [Use `Addressable::URI` everywhere](https://github.com/sferik/twitter/commit/97d7c68900c9974a1f6841f6eed2706df9030d64) ([@matthewrudy](https://twitter.com/matthewrudy))
+* [Allow use of `Twitter::Place` instead of `place_id`](https://github.com/sferik/twitter/commit/c2b31dd2385fefa30a9ddccf15415a713cf5953a)
+* [Allow use of `Twitter::Tweet` instead of `in_reply_to_status_id`](https://github.com/sferik/twitter/commit/6b7d6c2b637a074c348a56a51fb1e02252482fb2)
+
+5.0.1
+-----
+* [Fix `buftok` delimiter handling](https://github.com/sferik/twitter/pull/484)
+* [Started handling streaming deletes](https://github.com/sferik/twitter/commit/8860b97bce4bc36086116f380a2771af3c199ea2)
+
 5.0.0
 -----
 * [Remove `Twitter::API::Undocumented#status_activity` and `#statuses_activity`](https://github.com/sferik/twitter/commit/7f970810af251b2fe80c38b30c54485c55bd2034)

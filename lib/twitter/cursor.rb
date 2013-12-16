@@ -4,12 +4,11 @@ module Twitter
   class Cursor
     include Enumerable
     attr_reader :attrs
-    alias to_h attrs
-    alias to_hash attrs
-    alias to_hsh attrs
+    alias_method :to_h, :attrs
+    alias_method :to_hash, :attrs
+    alias_method :to_hsh, :attrs
 
     class << self
-
       # Construct a new Cursor object from a response hash
       #
       # @param response [Hash]
@@ -20,10 +19,9 @@ module Twitter
       # @param path [String]
       # @param options [Hash]
       # @return [Twitter::Cursor]
-      def from_response(response, key, klass, client, request_method, path, options)
+      def from_response(response, key, klass, client, request_method, path, options) # rubocop:disable ParameterLists
         new(response[:body], key, klass, client, request_method, path, options)
       end
-
     end
 
     # Initializes a new Cursor
@@ -36,7 +34,7 @@ module Twitter
     # @param path [String]
     # @param options [Hash]
     # @return [Twitter::Cursor]
-    def initialize(attrs, key, klass, client, request_method, path, options)
+    def initialize(attrs, key, klass, client, request_method, path, options) # rubocop:disable ParameterLists
       @key = key.to_sym
       @klass = klass
       @client = client
@@ -64,12 +62,12 @@ module Twitter
     def next_cursor
       @attrs[:next_cursor] || -1
     end
-    alias next next_cursor
+    alias_method :next, :next_cursor
 
     def previous_cursor
       @attrs[:previous_cursor]
     end
-    alias previous previous_cursor
+    alias_method :previous, :previous_cursor
 
     # @return [Boolean]
     def first?
@@ -94,6 +92,5 @@ module Twitter
         @collection << (@klass ? @klass.new(element) : element)
       end
     end
-
   end
 end

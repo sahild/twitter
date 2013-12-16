@@ -4,27 +4,25 @@ module Twitter
   class SearchResults
     include Twitter::Enumerable
     attr_reader :attrs
-    alias to_h attrs
-    alias to_hash attrs
-    alias to_hsh attrs
+    alias_method :to_h, :attrs
+    alias_method :to_hash, :attrs
+    alias_method :to_hsh, :attrs
 
     class << self
-
       # Construct a new SearchResults object from a response hash
       #
       # @param response [Hash]
       # @return [Twitter::Base]
-      def from_response(response={})
+      def from_response(response = {})
         new(response[:body])
       end
-
     end
 
     # Initializes a new SearchResults object
     #
     # @param attrs [Hash]
     # @return [Twitter::SearchResults]
-    def initialize(attrs={})
+    def initialize(attrs = {})
       @attrs = attrs
       @collection = Array(@attrs[:statuses]).map do |tweet|
         Tweet.new(tweet)
@@ -55,8 +53,8 @@ module Twitter
     def results_per_page
       @attrs[:search_metadata][:count] if @attrs[:search_metadata]
     end
-    alias rpp results_per_page
-    alias count results_per_page
+    alias_method :rpp, :results_per_page
+    alias_method :count, :results_per_page
 
     # @return [Integer]
     def since_id
@@ -65,9 +63,9 @@ module Twitter
 
     # @return [Boolean]
     def next_results?
-      !@attrs[:search_metadata][:next_results].nil? if @attrs[:search_metadata]
+      !!(@attrs[:search_metadata] && @attrs[:search_metadata][:next_results])
     end
-    alias next_page? next_results?
+    alias_method :next_page?, :next_results?
 
     # Returns a Hash of query parameters for the next result in the search
     #
@@ -79,7 +77,7 @@ module Twitter
         query_string_to_hash(query_string)
       end
     end
-    alias next_page next_results
+    alias_method :next_page, :next_results
 
     # Returns a Hash of query parameters for the refresh URL in the search
     #
@@ -89,7 +87,7 @@ module Twitter
       query_string = strip_first_character(@attrs[:search_metadata][:refresh_url])
       query_string_to_hash(query_string)
     end
-    alias refresh_page refresh_results
+    alias_method :refresh_page, :refresh_results
 
   private
 
@@ -110,7 +108,7 @@ module Twitter
     # @example Remove the first character from a query string
     #   strip_first_character!("?foo=bar&baz=qux") #=> "foo=bar&baz=qux"
     def strip_first_character!(string)
-      string[0] = ""
+      string[0] = ''
       string
     end
 
@@ -132,8 +130,7 @@ module Twitter
     # @example Convert hash's keys to symbols
     #   symbolize_keys({"foo"=>"bar", "baz"=>"qux"}) #=> {:foo=>"bar", :baz=>"qux"}
     def symbolize_keys(hash)
-      Hash[hash.map{|key, value| [key.to_sym, value]}]
+      Hash[hash.map { |key, value| [key.to_sym, value] }]
     end
-
   end
 end

@@ -1,34 +1,28 @@
+require 'addressable/uri'
 require 'twitter/arguments'
 require 'twitter/cursor'
 require 'twitter/user'
-require 'uri'
 
 module Twitter
   module REST
     module API
       module Utils
         DEFAULT_CURSOR = -1
-        URI_SUBSTRING = "://"
+        URI_SUBSTRING = '://'
 
         class << self
-
           def included(base)
             base.extend(ClassMethods)
           end
-
         end
 
         module ClassMethods
-
-          private
-
           def deprecate_alias(new_name, old_name)
             define_method(new_name) do |*args, &block|
-              warn "#{Kernel.caller.first}: [DEPRECATION] ##{new_name} it deprecated. Use ##{old_name} instead."
+              warn "#{Kernel.caller.first}: [DEPRECATION] ##{new_name} is deprecated. Use ##{old_name} instead."
               send(old_name, *args, &block)
             end
           end
-
         end
 
       private
@@ -42,9 +36,9 @@ module Twitter
           when ::Integer
             object
           when ::String
-            object.split("/").last.to_i
+            object.split('/').last.to_i
           when URI
-            object.path.split("/").last.to_i
+            object.path.split('/').last.to_i
           when Twitter::Identity
             object.id
           end
@@ -76,7 +70,7 @@ module Twitter
         # @param path [String]
         # @param args [Array]
         # @return [Array]
-        def objects_from_response_with_user(klass, request_method, path, args)
+        def objects_from_response_with_user(klass, request_method, path, args) # rubocop:disable ParameterLists
           arguments = Twitter::Arguments.new(args)
           merge_user!(arguments.options, arguments.pop)
           objects_from_response(klass, request_method, path, arguments.options)
@@ -87,7 +81,7 @@ module Twitter
         # @param path [String]
         # @param options [Hash]
         # @return [Array]
-        def objects_from_response(klass, request_method, path, options={})
+        def objects_from_response(klass, request_method, path, options = {}) # rubocop:disable ParameterLists
           response = send(request_method.to_sym, path, options)[:body]
           objects_from_array(klass, response)
         end
@@ -106,7 +100,7 @@ module Twitter
         # @param path [String]
         # @param args [Array]
         # @return [Array]
-        def threaded_objects_from_response(klass, request_method, path, args)
+        def threaded_objects_from_response(klass, request_method, path, args) # rubocop:disable ParameterLists
           arguments = Twitter::Arguments.new(args)
           arguments.flatten.threaded_map do |object|
             id = extract_id(object)
@@ -119,7 +113,7 @@ module Twitter
         # @param path [String]
         # @param options [Hash]
         # @return [Object]
-        def object_from_response(klass, request_method, path, options={})
+        def object_from_response(klass, request_method, path, options = {}) # rubocop:disable ParameterLists
           response = send(request_method.to_sym, path, options)
           klass.from_response(response)
         end
@@ -130,7 +124,7 @@ module Twitter
         # @param path [String]
         # @param args [Array]
         # @return [Twitter::Cursor]
-        def cursor_from_response_with_user(collection_name, klass, request_method, path, args)
+        def cursor_from_response_with_user(collection_name, klass, request_method, path, args) # rubocop:disable ParameterLists
           arguments = Twitter::Arguments.new(args)
           merge_user!(arguments.options, arguments.pop || screen_name) unless arguments.options[:user_id] || arguments.options[:screen_name]
           cursor_from_response(collection_name, klass, request_method, path, arguments.options)
@@ -142,7 +136,7 @@ module Twitter
         # @param path [String]
         # @param options [Hash]
         # @return [Twitter::Cursor]
-        def cursor_from_response(collection_name, klass, request_method, path, options)
+        def cursor_from_response(collection_name, klass, request_method, path, options) # rubocop:disable ParameterLists
           merge_default_cursor!(options)
           response = send(request_method.to_sym, path, options)
           Twitter::Cursor.from_response(response, collection_name.to_sym, klass, self, request_method, path, options)
@@ -150,7 +144,7 @@ module Twitter
 
         def handle_forbidden_error(klass, error)
           error = error.message == klass::MESSAGE ? klass.new : error
-          raise error
+          fail error
         end
 
         def merge_default_cursor!(options)
@@ -166,7 +160,7 @@ module Twitter
         # @param hash [Hash]
         # @param user [Integer, String, Twitter::User] A Twitter user ID, screen name, URI, or object.
         # @return [Hash]
-        def merge_user(hash, user, prefix=nil)
+        def merge_user(hash, user, prefix = nil)
           merge_user!(hash.dup, user, prefix)
         end
 
@@ -175,25 +169,25 @@ module Twitter
         # @param hash [Hash]
         # @param user [Integer, String, URI, Twitter::User] A Twitter user ID, screen name, URI, or object.
         # @return [Hash]
-        def merge_user!(hash, user, prefix=nil)
+        def merge_user!(hash, user, prefix = nil)
           case user
           when Integer
-            set_compound_key("user_id", user, hash, prefix)
+            set_compound_key('user_id', user, hash, prefix)
           when String
             if user[URI_SUBSTRING]
-              set_compound_key("screen_name", user.split("/").last, hash, prefix)
+              set_compound_key('screen_name', user.split('/').last, hash, prefix)
             else
-              set_compound_key("screen_name", user, hash, prefix)
+              set_compound_key('screen_name', user, hash, prefix)
             end
-          when URI
-            set_compound_key("screen_name", user.path.split("/").last, hash, prefix)
+          when URI, Addressable::URI
+            set_compound_key('screen_name', user.path.split('/').last, hash, prefix)
           when Twitter::User
-            set_compound_key("user_id", user.id, hash, prefix)
+            set_compound_key('user_id', user.id, hash, prefix)
           end
         end
 
-        def set_compound_key(key, value, hash, prefix=nil)
-          compound_key = [prefix, key].compact.join("_").to_sym
+        def set_compound_key(key, value, hash, prefix = nil) # rubocop:disable ParameterLists
+          compound_key = [prefix, key].compact.join('_').to_sym
           hash[compound_key] = value
           hash
         end
@@ -219,7 +213,7 @@ module Twitter
           hash
         end
 
-        def collect_user_ids_and_screen_names(users)
+        def collect_user_ids_and_screen_names(users) # rubocop:disable MethodLength
           user_ids, screen_names = [], []
           users.flatten.each do |user|
             case user
@@ -227,19 +221,18 @@ module Twitter
               user_ids << user
             when String
               if user[URI_SUBSTRING]
-                screen_names << user.split("/").last
+                screen_names << user.split('/').last
               else
                 screen_names << user
               end
             when URI
-              screen_names << user.path.split("/").last
+              screen_names << user.path.split('/').last
             when Twitter::User
               user_ids << user.id
             end
           end
           [user_ids, screen_names]
         end
-
       end
     end
   end

@@ -1,9 +1,9 @@
 require 'time'
-require 'twitter/memoizable'
+require 'memoizable'
 
 module Twitter
   module Creatable
-    include Twitter::Memoizable
+    include Memoizable
 
     # Time when the object was created on Twitter
     #
@@ -18,6 +18,5 @@ module Twitter
       !!@attrs[:created_at]
     end
     memoize :created?
-
   end
 end

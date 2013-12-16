@@ -5,14 +5,14 @@
 [![Dependency Status](https://gemnasium.com/sferik/twitter.png?travis)][gemnasium]
 [![Code Climate](https://codeclimate.com/github/sferik/twitter.png)][codeclimate]
 [![Coverage Status](https://coveralls.io/repos/sferik/twitter/badge.png?branch=master)][coveralls]
-[![Click here to make a donation](http://www.pledgie.com/campaigns/18388.png)][pledgie]
+[![Gittip](http://img.shields.io/gittip/sferik.png)][gittip]
 
 [gem]: https://rubygems.org/gems/twitter
 [travis]: http://travis-ci.org/sferik/twitter
 [gemnasium]: https://gemnasium.com/sferik/twitter
 [codeclimate]: https://codeclimate.com/github/sferik/twitter
 [coveralls]: https://coveralls.io/r/sferik/twitter
-[pledgie]: http://pledgie.com/campaigns/18388
+[gittip]: https://www.gittip.com/sferik/
 
 A Ruby interface to the Twitter API.
 
@@ -25,9 +25,9 @@ public key as a trusted certificate (you only need to do this once):
 
     gem cert --add <(curl -Ls https://raw.github.com/sferik/twitter/master/certs/sferik.pem)
 
-Then, install the gem with the high security trust policy:
+Then, install the gem with the medium security trust policy:
 
-    gem install twitter -P HighSecurity
+    gem install twitter -P MediumSecurity
 
 ## CLI
 
@@ -41,6 +41,11 @@ gem in version 0.5.0 and now exists as a [separate project][t].
 [http://rdoc.info/gems/twitter][documentation]
 
 [documentation]: http://rdoc.info/gems/twitter
+
+## Examples
+[https://github.com/sferik/twitter/tree/master/examples][examples]
+
+[examples]: https://github.com/sferik/twitter/tree/master/examples
 
 ## Announcements
 You should [follow @gem][follow] on Twitter for announcements and updates about
@@ -120,40 +125,45 @@ end
 
 ```ruby
 topics = ["coffee", "tea"]
-client.filter(:track => topics.join(",")) do |tweet|
-  puts tweet.text
+client.filter(:track => topics.join(",")) do |object|
+  puts object.text if object.is_a?(Twitter::Tweet)
 end
 ```
 
 **Stream a random sample of all tweets**
 
 ```ruby
-client.sample do |tweet|
-  puts tweet.text
+client.sample do |object|
+  puts object.text if object.is_a?(Twitter::Tweet)
 end
 ```
 
-**Stream tweets, events and direct messages for the authenticated user**
+**Stream tweets, events, and direct messages for the authenticated user**
 
 ```ruby
-client.user do |message|
-  puts message 
+client.user do |object|
+  case object
+  when Twitter::Tweet
+    puts "It's a tweet!"
+  when Twitter::DirectMessage
+    puts "It's a direct message!"
+  when Twitter::Streaming::StallWarning
+    warn "Falling behind!"
+  end
 end
 ```
 
-`message` can be one of
- + Twitter::Tweet
- + Twitter::DirectMessage
- + Twitter::Streaming::Event
- + Twitter::Streaming::FriendList
-
-[messages]: https://dev.twitter.com/docs/streaming-apis/messages
+An `object` may be one of the following:
+* Twitter::DirectMessage
+* Twitter::Streaming::DeletedTweet
+* Twitter::Streaming::Event
+* Twitter::Streaming::FriendList
+* Twitter::Streaming::StallWarning
+* Twitter::Tweet
 
 ### Cursors
 The `Twitter::Cursor` class has been completely redesigned with a focus on
 simplicity and performance.
-
-[cursors]: https://dev.twitter.com/docs/misc/cursoring
 
 <table>
   <thead>
@@ -161,14 +171,14 @@ simplicity and performance.
       <th>Notes</th>
       <th colspan="2">Version 4</th>
       <th colspan="2">Version 5</th>
-    </th>
+    </tr>
     <tr>
       <th></th>
       <th>Code</th>
       <th>HTTP GETs</th>
       <th>Code</th>
       <th>HTTP GETs</th>
-    </th>
+    </tr>
   </thead>
   <tbody>
     <tr>
@@ -176,13 +186,13 @@ simplicity and performance.
         Are you at the start of the cursor?
       </td>
       <td>
-        <pre><code lang="ruby">client.friends.first</code></pre>
+        <pre><code>client.friends.first</code></pre>
       </td>
       <td>
         <em>Θ(1)</em>
       </td>
       <td>
-        <pre><code lang="ruby">client.friends.first?</code></pre>
+        <pre><code>client.friends.first?</code></pre>
       </td>
       <td>
         <em>Θ(1)</em>
@@ -193,13 +203,13 @@ simplicity and performance.
         Return your most recent follower.
       </td>
       <td>
-        <pre><code lang="ruby">client.friends.users.first</code></pre>
+        <pre><code>client.friends.users.first</code></pre>
       </td>
       <td>
         <em>Θ(1)</em>
       </td>
       <td>
-        <pre><code lang="ruby">client.friends.first</code></pre>
+        <pre><code>client.friends.first</code></pre>
       </td>
       <td>
         <em>Θ(1)</em>
@@ -210,13 +220,13 @@ simplicity and performance.
         Return an array of all your friends.
       </td>
       <td>
-        <pre><code lang="ruby">client.friends.all</code></pre>
+        <pre><code>client.friends.all</code></pre>
       </td>
       <td>
         <em>Θ(n+1)</em>
       </td>
       <td>
-        <pre><code lang="ruby">client.friends.to_a</code></pre>
+        <pre><code>client.friends.to_a</code></pre>
       </td>
       <td>
         <em>Θ(n)</em>
@@ -227,13 +237,13 @@ simplicity and performance.
         Collect your 20 most recent friends.
       </td>
       <td>
-        <pre><code lang="ruby">client.friends.take(20)</code></pre>
+        <pre><code>client.friends.take(20)</code></pre>
       </td>
       <td>
         <em>Θ(n+1)</em>
       </td>
       <td>
-        <pre><code lang="ruby">client.friends.take(20)</code></pre>
+        <pre><code>client.friends.take(20)</code></pre>
       </td>
       <td>
         <em>Θ(1)</em>
@@ -244,7 +254,7 @@ simplicity and performance.
         Collect your 20 most recent friends twice.
       </td>
       <td>
-        <pre><code lang="ruby">friends = client.friends
+        <pre><code>friends = client.friends
 2.times.collect do
   friends.take(20)
 end</code></pre>
@@ -253,7 +263,7 @@ end</code></pre>
         <em>Θ(2n+2)</em>
       </td>
       <td>
-        <pre><code lang="ruby">friends = client.friends
+        <pre><code>friends = client.friends
 2.times.collect do
   friends.take(20)
 end</code></pre>
@@ -423,8 +433,8 @@ These methods are aliased to `#url` for users who prefer that nomenclature.
 `Twitter::User` previously had a `#url` method, which returned the user's
 website. This URI is now available via the `#website` method.
 
-All `#uri` methods now return `URI` objects instead of strings. To convert a
-`URI` object to a string, call `#to_s` on it.
+All `#uri` methods now return `Addressable::URI` objects instead of strings. To convert an
+`Addressable::URI` object to a string, call `#to_s` on it.
 
 ## Configuration
 Twitter API v1.1 requires you to authenticate via OAuth, so you'll need to
@@ -500,14 +510,14 @@ client.follow(213747670)
 client.user("gem")
 client.user(213747670)
 ```
-**Fetch a cursored list of followers with profile details (by screen name or user ID, or by implict authenticated user)**
+**Fetch a cursored list of followers with profile details (by screen name or user ID, or by implicit authenticated user)**
 
 ```ruby
 client.followers("gem")
 client.followers(213747670)
 client.followers
 ```
-**Fetch a cursored list of friends with profile details (by screen name or user ID, or by implict authenticated user)**
+**Fetch a cursored list of friends with profile details (by screen name or user ID, or by implicit authenticated user)**
 
 ```ruby
 client.friends("gem")
@@ -600,7 +610,7 @@ introduced with new major versions. As a result of this policy, you can (and
 should) specify a dependency on this gem using the [Pessimistic Version
 Constraint][pvc] with two digits of precision. For example:
 
-    spec.add_dependency 'twitter', '~> 4.0'
+    spec.add_dependency 'twitter', '~> 5.0'
 
 [semver]: http://semver.org/
 [pvc]: http://docs.rubygems.org/read/chapter/16#page74

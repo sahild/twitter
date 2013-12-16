@@ -17,7 +17,7 @@ module Twitter
         # @param place_id [String] A place in the world. These IDs can be retrieved from {Twitter::REST::API::PlacesAndGeo#reverse_geocode}.
         # @param options [Hash] A customizable set of options.
         # @return [Twitter::Place] The requested place.
-        def place(place_id, options={})
+        def place(place_id, options = {})
           object_from_response(Twitter::Place, :get, "/1.1/geo/id/#{place_id}.json", options)
         end
 
@@ -35,8 +35,8 @@ module Twitter
         # @option options [String] :granularity ('neighborhood') This is the minimal granularity of place types to return and must be one of: 'poi', 'neighborhood', 'city', 'admin' or 'country'.
         # @option options [Integer] :max_results A hint as to the number of results to return. This does not guarantee that the number of results returned will equal max_results, but instead informs how many "nearby" results to return. Ideally, only pass in the number of places you intend to display to the user here.
         # @return [Array<Twitter::Place>]
-        def reverse_geocode(options={})
-          object_from_response(Twitter::GeoResults, :get, "/1.1/geo/reverse_geocode.json", options)
+        def reverse_geocode(options = {})
+          object_from_response(Twitter::GeoResults, :get, '/1.1/geo/reverse_geocode.json', options)
         end
 
         # Search for places that can be attached to a {Twitter::REST::API::Tweets#update}
@@ -56,10 +56,10 @@ module Twitter
         # @option options [String] :contained_within This is the place_id which you would like to restrict the search results to. Setting this value means only places within the given place_id will be found.
         # @option options [String] :"attribute:street_address" This option searches for places which have this given street address. There are other well-known and application-specific attributes available. Custom attributes are also permitted.
         # @return [Array<Twitter::Place>]
-        def geo_search(options={})
-          object_from_response(Twitter::GeoResults, :get, "/1.1/geo/search.json", options)
+        def geo_search(options = {})
+          object_from_response(Twitter::GeoResults, :get, '/1.1/geo/search.json', options)
         end
-        alias places_nearby geo_search
+        alias_method :places_nearby, :geo_search
 
         # Locates places near the given coordinates which are similar in name
         #
@@ -75,11 +75,10 @@ module Twitter
         # @option options [String] :contained_within This is the place_id which you would like to restrict the search results to. Setting this value means only places within the given place_id will be found.
         # @option options [String] :"attribute:street_address" This option searches for places which have this given street address. There are other well-known and application-specific attributes available. Custom attributes are also permitted.
         # @return [Array<Twitter::Place>]
-        def similar_places(options={})
-          object_from_response(Twitter::GeoResults, :get, "/1.1/geo/similar_places.json", options)
+        def similar_places(options = {})
+          object_from_response(Twitter::GeoResults, :get, '/1.1/geo/similar_places.json', options)
         end
-        alias places_similar similar_places
-
+        alias_method :places_similar, :similar_places
       end
     end
   end

@@ -88,23 +88,23 @@ module Twitter
       end
 
       # Perform an HTTP DELETE request
-      def delete(path, params={})
+      def delete(path, params = {})
         request(:delete, path, params)
       end
 
       # Perform an HTTP GET request
-      def get(path, params={})
+      def get(path, params = {})
         request(:get, path, params)
       end
 
       # Perform an HTTP POST request
-      def post(path, params={})
-        signature_params = params.values.any?{|value| value.respond_to?(:to_io)} ? {} : params
+      def post(path, params = {})
+        signature_params = params.values.any? { |value| value.respond_to?(:to_io) } ? {} : params
         request(:post, path, params, signature_params)
       end
 
       # Perform an HTTP PUT request
-      def put(path, params={})
+      def put(path, params = {})
         request(:put, path, params)
       end
 
@@ -127,7 +127,7 @@ module Twitter
         @connection ||= Faraday.new(ENDPOINT, connection_options)
       end
 
-      def request(method, path, params={}, signature_params=params)
+      def request(method, path, params = {}, signature_params = params) # rubocop:disable ParameterLists
         response = connection.send(method.to_sym, path, params) do |request|
           bearer_token_request = params.delete(:bearer_token_request)
           if bearer_token_request
@@ -143,7 +143,7 @@ module Twitter
         raise Twitter::Error
       end
 
-      def auth_token(method, path, params={}, signature_params=params)
+      def auth_token(method, path, params = {}, signature_params = params) # rubocop:disable ParameterLists
         if !user_token?
           @bearer_token = token unless bearer_token?
           bearer_auth_header
@@ -167,9 +167,8 @@ module Twitter
 
       # Base64.strict_encode64 is not available on Ruby 1.8.7
       def strict_encode64(str)
-        Base64.encode64(str).gsub("\n", "")
+        Base64.encode64(str).gsub("\n", '')
       end
-
     end
   end
 end
